@@ -203,6 +203,14 @@ class BarObject(object):
     def datetime(self):
         if self._dt is not None:
             return self._dt
+        enviroment = Environment.get_instance()
+        dict = enviroment.config.mod.tushare
+        #print(dict.__dict__.get('enabled'))
+        if dict.__dict__.get('enabled') == True:
+            print('enviroment.config.mod.tushare[\'enabled\'] == True')
+            return self._data['date']
+        #datetime1 = convert_int_to_datetime(self._data['date'])
+        #datetime1 = convert_int_to_datetime(self._data['datetime'])
         return convert_int_to_datetime(self._data['datetime'])
 
     @property

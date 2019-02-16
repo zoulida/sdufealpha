@@ -54,6 +54,9 @@ class DayBarStore(object):
         dtype = np.dtype([('datetime', np.uint64)] +
                          [(f, self._converter.field_type(f, self._table.cols[f].dtype))
                           for f in fields])
+        shape = (e - s,)
+        #ttt = np.empty(shape)
+        #result2 = np.empty(shape=(e - s, ), dtype=dtype)
         result = np.empty(shape=(e - s, ), dtype=dtype)
         for f in fields:
             result[f] = self._converter.convert(f, self._table.cols[f][s:e])
