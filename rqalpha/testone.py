@@ -13,18 +13,21 @@ def init():
 config = {
     "base": {
         "strategy_file": "examples/golden_cross.py",#""./examples/buy_and_hold.py",examples/golden_cross.py
-        "start_date": "2016-01-01",
-        "end_date": "2018-12-31",
+        "start_date": "2017-01-01",
+        "end_date": "2019-03-31",
         "frequency": "1d",
         "accounts": {
             "stock": 100000
         },
-        "benchmark":"000300.XSHG"
+        #"benchmark":"000300.XSHG"
 
     },
     "mod": {
-        "tushare": {
+        "mysql": {
                      "enabled": True
+                 },
+        "tushare": {
+                     "enabled": False
                  },
         "sys_analyser": {
             "enabled": True,

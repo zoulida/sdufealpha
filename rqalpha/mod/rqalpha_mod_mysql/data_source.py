@@ -22,20 +22,20 @@ from rqalpha.data.base_data_source import BaseDataSource
 from rqalpha.utils.py2 import lru_cache
 
 
-class TushareKDataSource(BaseDataSource):
+class MysqlDayDataSource(BaseDataSource):
     def __init__(self, path):
-        super(TushareKDataSource, self).__init__(path)
+        super(MysqlDayDataSource, self).__init__(path)
 
-    def getTushareResult(self, code, index, start, end):
+    def getMysqlResult(self, code, index, start, end):
         #return ts.get_k_data(code, index=index, start=start, end=end)
-        from .tushareCache import TushareCache
-        tc = TushareCache()
+        from .mysqlCache import MysqlCache
+        tc = MysqlCache()
         result = tc.getCacheData(code, index, start, end)
         return result
     #@lru_cache(None)
     #@staticmethod
     #@lru_cache(None)
-    def get_tushare_k_data(self, instrument, start_dt, end_dt):
+    def get_mysql_k_data(self, instrument, start_dt, end_dt):
         order_book_id = instrument.order_book_id
         code = order_book_id.split(".")[0]
 
@@ -47,32 +47,32 @@ class TushareKDataSource(BaseDataSource):
             return None
         start = start_dt.strftime('%Y-%m-%d')
         end = end_dt.strftime('%Y-%m-%d')
-        tushareData = self.getTushareResult(code, index, start, end)
+        tushareData = self.getMysqlResult(code, index, start, end)
         return tushareData  #ts.get_k_data(code, index=index, start=start_dt.strftime('%Y-%m-%d'), end=end_dt.strftime('%Y-%m-%d'))
 
     def get_bar(self, instrument, dt, frequency):
         if frequency != '1d':
-            return super(TushareKDataSource, self).get_bar(instrument, dt, frequency)
+            return super(MysqlDayDataSource, self).get_bar(instrument, dt, frequency)
         #self.get_tushare_k_data( instrument, dt, dt)
-        bar_data = self.get_tushare_k_data( instrument, dt, dt)
+        bar_data = self.get_mysql_k_data(instrument, dt, dt)
 
         if bar_data is None or bar_data.empty:
-            return super(TushareKDataSource, self).get_bar(instrument, dt, frequency)
+            return super(MysqlDayDataSource, self).get_bar(instrument, dt, frequency)
         else:
             return bar_data.iloc[0].to_dict()
 
     def history_bars(self, instrument, bar_count, frequency, fields, dt, skip_suspended=True, include_now=False,
                      adjust_type='pre', adjust_orig=None):
         if frequency != '1d' or not skip_suspended:
-            return super(TushareKDataSource, self).history_bars(instrument, bar_count, frequency, fields, dt, skip_suspended)
+            return super(MysqlDayDataSource, self).history_bars(instrument, bar_count, frequency, fields, dt, skip_suspended)
 
         start_dt_loc = self.get_trading_calendar().get_loc(dt.replace(hour=0, minute=0, second=0, microsecond=0)) - bar_count + 1
         start_dt = self.get_trading_calendar()[start_dt_loc]
 
-        bar_data = self.get_tushare_k_data(instrument, start_dt, dt)
+        bar_data = self.get_mysql_k_data(instrument, start_dt, dt)
 
         if bar_data is None or bar_data.empty:
-            return super(TushareKDataSource, self).get_bar(instrument, dt, frequency)
+            return super(MysqlDayDataSource, self).get_bar(instrument, dt, frequency)
         else:
             if isinstance(fields, six.string_types):
                 fields = [fields]
