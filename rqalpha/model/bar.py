@@ -209,6 +209,11 @@ class BarObject(object):
         if dict.__dict__.get('enabled') == True:
             print('enviroment.config.mod.tushare[\'enabled\'] == True')
             return self._data['date']
+        dict2 = enviroment.config.mod.mysql
+        # print(dict2.__dict__.get('enabled'))
+        if dict2.__dict__.get('enabled') == True:
+            print('enviroment.config.mod.mysql[\'enabled\'] == True')
+            return self._data['date']
         #datetime1 = convert_int_to_datetime(self._data['date'])
         #datetime1 = convert_int_to_datetime(self._data['datetime'])
         return convert_int_to_datetime(self._data['datetime'])

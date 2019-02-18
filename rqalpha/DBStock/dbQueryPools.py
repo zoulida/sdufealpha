@@ -67,9 +67,40 @@ def queryMySQL_getLast(code1):#使用连接池
         conn.close()
         #查询表结构语句为desc stock_000016
         return  df
+def getIndexByDate(code1, startdate = '2017-12-09', enddate = '2018-12-09'):  #指数数据
+    try:
+        # 调用连接池
+        conn = pool.connection()
+        cur = conn.cursor()
+        code = code1 + '.SH'
+        schema = 'stock_index_daily'
+        sql = 'select * from %s where trade_date between \'%s\'' % (schema , startdate) + ' and \'%s\'' % enddate \
+              + ' and ts_code =\'%s\'' %code
+        #print(sql)
+        cur.execute(sql)
+        results = cur.fetchall()
+        df = pd.DataFrame(list(results))
+        #df.rename(columns={0:'Stamp', 1:'Date',2:'Code', 3:'Name', 4: 'Close', 5:'High', 6:'Low', 7:'Open', 8:'Lclose'
+        #                   , 9:'涨跌额', 10:'涨跌幅', 11:'换手率', 12:'Volume', 13:'成交金额', 14:'总市值', 15:'流通市值'} , inplace=True)
+        #print(df)
+        df.rename(
+            columns={0: 'index', 1: 'code', 2: 'date', 3: 'close', 4: 'open', 5: 'high', 6: 'low', 7: 'lclose', 8: 'change'
+                , 9: 'pct_chg', 10: 'volume', 11: 'amount'}, inplace=True)
+        #print(df)
+
+    except IOError:
+        conn.rollback() # 出现异常 回滚事件
+        print("Error: Function happen Error: test()")
+    finally:
+        print("释放资源，数据库连接池")
+        cur.close()
+        conn.close()
+        #查询表结构语句为desc stock_000016
+        return  df
 
 def queryMySQL_plot_stock_market(code1, startdate = '2017-12-09', enddate = '2018-12-09'):#使用连接池
-
+    if code1 == '000300':#如果是指数，如果沪深300.
+        return getIndexByDate(code1, startdate, enddate)
     try:
         # 调用连接池
         conn = pool.connection()
@@ -80,8 +111,11 @@ def queryMySQL_plot_stock_market(code1, startdate = '2017-12-09', enddate = '201
         cur.execute(sql)
         results = cur.fetchall()
         df = pd.DataFrame(list(results))
-        df.rename(columns={0:'Stamp', 1:'Date',2:'Code', 3:'Name', 4: 'Close', 5:'High', 6:'Low', 7:'Open', 8:'Lcose'
-                           , 9:'涨跌额', 10:'涨跌幅', 11:'换手率', 12:'Volume', 13:'成交金额', 14:'总市值', 15:'流通市值'} , inplace=True)
+        #df.rename(columns={0:'Stamp', 1:'Date',2:'Code', 3:'Name', 4: 'Close', 5:'High', 6:'Low', 7:'Open', 8:'Lclose'
+        #                   , 9:'涨跌额', 10:'涨跌幅', 11:'换手率', 12:'Volume', 13:'成交金额', 14:'总市值', 15:'流通市值'} , inplace=True)
+        df.rename(
+            columns={0: 'stamp', 1: 'date', 2: 'code', 3: 'name', 4: 'close', 5: 'high', 6: 'low', 7: 'open', 8: 'lclose'
+                , 9: '涨跌额', 10: '涨跌幅', 11: '换手率', 12: 'volume', 13: '成交金额', 14: '总市值', 15: '流通市值'}, inplace=True)
         #print(df)
 
     except IOError:

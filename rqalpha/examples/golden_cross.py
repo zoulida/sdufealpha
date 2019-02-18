@@ -5,9 +5,13 @@ import talib
 
 # 在这个方法中编写任何的初始化逻辑。context对象将会在你的算法策略的任何方法之间做传递。
 def init(context):
+    """
+           [str] 股票：证券代码，证券的独特的标识符。应以’.XSHG’或’.XSHE’结尾，前者代表上证，后者代表深证。
+           期货：期货代码，期货的独特的标识符（郑商所期货合约数字部分进行了补齐。例如原有代码’ZC609’补齐之后变为’ZC1609’）。
+           主力连续合约UnderlyingSymbol+88，例如’IF88’ ；指数连续合约命名规则为UnderlyingSymbol+99
+           """
 
-
-    context.s1 = "000555.XSHE"
+    context.s1 = "600016.XSHG"#"000001.XSHE"
 
     # 设置这个策略当中会用到的参数，在策略中可以随时调用，这个策略使用长短均线，我们在这里设定长线和短线的区间，在调试寻找最佳区间的时候只需要在这里进行数值改动
     context.SHORTPERIOD = 2
@@ -35,6 +39,7 @@ def handle_bar(context, bar_dict):
     short_avg = talib.SMA(prices, context.SHORTPERIOD)
     long_avg = talib.SMA(prices, context.LONGPERIOD)
 
+    print("short_avg[-1], long_avg[-1]", short_avg[-1], long_avg[-1])
     plot("short avg", short_avg[-1])
     plot("long avg", long_avg[-1])
 

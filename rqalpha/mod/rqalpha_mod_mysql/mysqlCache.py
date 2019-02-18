@@ -26,15 +26,16 @@ class MyClass:
 class MysqlCache():
 
     @lru_cache(None)
-    def getdatafromTushare(self, code, index, start, end):
+    def getdatafromMysql(self, code, index, start, end):
         startstr = start.strftime('%Y-%m-%d')
         endstr = end.strftime('%Y-%m-%d')
         #reslut = ts.get_k_data(code, index=index, start=startstr, end=endstr)
         import rqalpha.DBStock.dbQueryPools as dbpool
         df = dbpool.queryMySQL_plot_stock_market(code, start, end)
-        df['Date'] = pd.to_datetime(df['Date'])
-        df.set_index('Date', inplace=True)
-        reslut = df[(True ^ df['Close'].isin([0]))]  # 条件删除去除值为0的行
+        df['date'] = pd.to_datetime(df['date'])
+        #df.set_index('Date', inplace=True)
+        reslut = df[(True ^ df['close'].isin([0]))]  # 条件删除去除值为0的行
+
         return reslut
 
     def getCacheData(self, code, index, start, end):
@@ -44,13 +45,13 @@ class MysqlCache():
         startdata -= datetime.timedelta(days=365)#获取之前一年的数据，以备函数调用
         enddata = enviroment.config.base.end_date
         #print(startdata)
-        data = self.getdatafromTushare(code, index, startdata, enddata)
+        data = self.getdatafromMysql(code, index, startdata, enddata)
         #print(data)
         #startstr = start.strftime('%Y-%m-%d')
         #endstr = end.strftime('%Y-%m-%d')
-        result = data.loc[start:end,]
-        #result = data.loc[(data['Date'] >= start) & (data['Date'] <= end) ]
-        print(result)
+        #result = data.loc[start:end,]
+        result = data.loc[(data['date'] >= start) & (data['date'] <= end) ]
+        #print(result)
         return result
 
 if __name__ =='__main__':
@@ -59,13 +60,13 @@ if __name__ =='__main__':
     # print(c1 == c2) # True
     tc = MysqlCache()
     tc.getCacheData('000300', True, start ='2018-03-13', end = '2018-05-13')
-    tc.getdatafromTushare('000300', True, start ='2018-03-13', end = '2018-05-13')
+    tc.getdatafromMysql('000300', True, start ='2018-03-13', end ='2018-05-13')
 
-    tc.getdatafromTushare('000001', False, start='2018-03-13', end='2018-05-13')
+    tc.getdatafromMysql('000001', False, start='2018-03-13', end='2018-05-13')
 
-    tc.getdatafromTushare('000001', False, start='2018-03-13', end='2018-05-13')
+    tc.getdatafromMysql('000001', False, start='2018-03-13', end='2018-05-13')
 
-    tc.getdatafromTushare('000001', False, start='2018-03-13', end='2018-05-13')
+    tc.getdatafromMysql('000001', False, start='2018-03-13', end='2018-05-13')
 
-    tb = MysqlCache().getdatafromTushare('000300', True, start='2018-03-13', end='2018-05-13')
+    tb = MysqlCache().getdatafromMysql('000300', True, start='2018-03-13', end='2018-05-13')
     print(tb)
