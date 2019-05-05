@@ -213,6 +213,7 @@ class BarObject(object):
         # print(dict2.__dict__.get('enabled'))
         if dict2.__dict__.get('enabled') == True:
             print('enviroment.config.mod.mysql[\'enabled\'] == True')
+            print(self._data)
             return self._data['date']
         #datetime1 = convert_int_to_datetime(self._data['date'])
         #datetime1 = convert_int_to_datetime(self._data['datetime'])
